@@ -2,34 +2,26 @@ on run {input, parameters}
 	tell application "iTerm"
 		activate
 		set newWindow to (create window with default profile)
-		--set firstSession to (current tab of newWindow)
-		tell current session of newWindow
-			write text "host 0"
-		end tell
 		
-		tell last session of current tab of newWindow
-			split vertically with default profile
-			tell last session of current tab of newWindow
-				write text "host1"
-			end tell
-		end tell
-	
-		tell last session of current tab of newWindow
-			split vertically with default profile
-			
-			tell last session of current tab of newWindow
-				write text "host 2"
-			end tell
-		end tell
+		--TODO do not loop if there are more than 3/6 hosts
+		set hosts to do shell script "/tmp/getHosts.sh"
+		set numberOfHosts to count paragraphs of (hosts)
+		display dialog numberOfHosts
 		
-		tell last session of current tab of newWindow
-			split vertically with default profile
-			
+		set hosts to paragraphs of hosts
+		set counter to 0
+		repeat with eachHost in hosts
+			--display dialog eachHost
+			set counter to counter + 1
 			tell last session of current tab of newWindow
-				write text "host 3"
+				write text eachHost
 			end tell
-		end tell
-		
+			if counter < numberOfHosts then
+				tell last session of current tab of newWindow
+					split vertically with default profile
+				end tell
+			end if
+		end repeat	
 	end tell
 	return input
 end run
